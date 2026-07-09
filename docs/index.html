@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Clasificador ARCA</title>
+<style>
+  :root {
+    --bg: #f5f3ee;
+    --panel: #ffffff;
+    --ink: #2b2620;
+    --muted: #756f64;
+    --border: #ddd6c9;
+    --accent: #8a5a2b;
+    --accent-ink: #ffffff;
+    --ok: #3f7d4f;
+    --warn: #b5762b;
+    --err: #b3402f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  header {
+    background: var(--accent);
+    color: var(--accent-ink);
+    padding: 1.1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  header h1 { font-size: 1.15rem; margin: 0; font-weight: 600; }
+  header .sub { font-size: 0.8rem; opacity: 0.85; }
+  #status-bar {
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .dot.ok { background: #7ee08f; }
+  .dot.err { background: #f08e7e; }
+
+  main { max-width: 1200px; margin: 0 auto; padding: 1.25rem; }
+
+  #aviso {
+    background: #fff6e0;
+    border: 1px solid #e6c988;
+    border-radius: 8px;
+    padding: 0.65rem 0.9rem;
+    font-size: 0.8rem;
+    margin-bottom: 1rem;
+    color: #6b5215;
+  }
+
+  #dropzone {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--muted);
+    background: var(--panel);
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  #dropzone.drag { border-color: var(--accent); background: #fbf3e7; }
+  #dropzone input { display: none; }
+
+  #toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem 0;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  #toolbar .info { font-size: 0.85rem; color: var(--muted); }
+
+  button {
+    font: inherit;
+    border: none;
+    border-radius: 7px;
+    padding: 0.5rem 0.9rem;
+    cursor: pointer;
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+  button.secondary { background: var(--panel); color: var(--ink); border: 1px solid var(--border); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.small { padding: 0.3rem 0.6rem; font-size: 0.8rem; }
+
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1rem;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .card .thumb-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .card img.thumb {
+    width: 84px; height: 84px; object-fit: cover; border-radius: 6px;
+    background: #eee;
+    flex-shrink: 0;
+  }
+  .card .meta { min-width: 0; flex: 1; }
+  .card .filename { font-weight: 600; font-size: 0.85rem; word-break: break-all; }
+  .badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    margin-top: 0.3rem;
+    color: white;
+  }
+  .badge.pendiente { background: var(--muted); }
+  .badge.clasificando { background: var(--warn); }
+  .badge.listo { background: #5b7fbf; }
+  .badge.guardado { background: var(--ok); }
+  .badge.error { background: var(--err); }
+
+  .card .body {
+    padding: 0.75rem;
+    display: none;
+    max-height: 420px;
+    overflow-y: auto;
+  }
+  .card.expanded .body { display: block; }
+
+  .field { margin-bottom: 0.55rem; }
+  .field label { display: block; font-size: 0.72rem; color: var(--muted); margin-bottom: 0.15rem; }
+  .field input[type=text], .field select, .field textarea {
+    width: 100%;
+    font: inherit;
+    font-size: 0.82rem;
+    padding: 0.3rem 0.4rem;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: #fffdf9;
+  }
+  .field.checkbox { display: flex; align-items: center; gap: 0.4rem; }
+  .field.checkbox label { margin: 0; font-size: 0.8rem; color: var(--ink); }
+
+  fieldset { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.75rem; padding: 0.6rem; }
+  legend { font-size: 0.75rem; color: var(--accent); font-weight: 600; padding: 0 0.3rem; }
+
+  .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.2rem 0.5rem; }
+
+  .card .actions {
+    padding: 0.6rem 0.75rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card .error-msg { color: var(--err); font-size: 0.78rem; padding: 0.5rem 0.75rem; }
+
+  .toggle-link { font-size: 0.75rem; color: var(--accent); cursor: pointer; text-decoration: underline; }
+
+  #empty-hint { color: var(--muted); text-align: center; padding: 2rem 0; font-size: 0.9rem; }
+
+  #apikey-bar {
+    background: #fbf3e7;
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    font-size: 0.82rem;
+  }
+  #apikey-bar label { color: var(--muted); }
+  #apikey-bar input {
+    font: inherit;
+    font-size: 0.82rem;
+    padding: 0.3rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    min-width: 260px;
+    flex: 1 1 260px;
+  }
+  #apikey-msg { font-size: 0.78rem; color: var(--ok); }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Clasificador de imagenes coloniales - Proyecto ARCA</h1>
+    <div class="sub">Sugerencias de clasificacion con Claude (vision) - revisa y edita antes de guardar</div>
+  </div>
+  <div id="status-bar">
+    <span class="dot" id="status-dot"></span>
+    <span id="status-text">Verificando...</span>
+  </div>
+</header>
+
+<div id="apikey-bar">
+  <label for="apikey-input">API key de Anthropic:</label>
+  <input type="password" id="apikey-input" placeholder="sk-ant-..." autocomplete="off" />
+  <button class="small" id="btn-apikey-guardar">Guardar key</button>
+  <button class="small secondary" id="btn-apikey-mostrar" type="button">Mostrar</button>
+  <button class="small secondary" id="btn-apikey-borrar" type="button">Borrar</button>
+  <span id="apikey-msg"></span>
+</div>
+
+<main>
+  <div id="aviso">
+    Esta pagina llama directamente a la API de Anthropic desde tu navegador (sin servidor
+    intermedio). Tu API key se guarda solo en <code>localStorage</code> de este navegador,
+    nunca se sube a GitHub. No la pegues en una computadora compartida sin borrarla despues
+    (boton "Borrar").
+  </div>
+
+  <div id="dropzone">
+    <p><strong>Arrastra imagenes aqui</strong> o hace click para elegir archivos</p>
+    <p style="font-size:0.78rem">jpg, jpeg, png, webp, gif</p>
+    <input type="file" id="file-input" multiple accept=".jpg,.jpeg,.png,.webp,.gif" />
+  </div>
+
+  <div id="toolbar">
+    <div class="info" id="toolbar-info">0 imagenes cargadas</div>
+    <div style="display:flex; gap:0.5rem; flex-wrap: wrap;">
+      <button class="secondary" id="btn-clasificar-todas">Clasificar pendientes</button>
+      <button class="secondary" id="btn-guardar-todas">Marcar listas como guardadas</button>
+      <button id="btn-descargar-csv">Descargar CSV</button>
+    </div>
+  </div>
+
+  <div id="grid"></div>
+  <div id="empty-hint">Todavia no cargaste imagenes.</div>
+</main>
+
+<script>
+const ANTHROPIC_MODEL = "claude-sonnet-5";
+
+const COLUMNAS_ADMINISTRATIVAS = [
+  "registro", "titulo", "Fecha", "Autores", "Técnicas", "Ciudad_origen",
+  "Pais_origen", "Ciudad_actual", "Pais_actual", "Lugar ubicacion",
+];
+
+const COLUMNAS_CLASIFICACION = [
+  "Categoria1", "Categoria2", "Categoria3", "Categoria4", "Categoria5", "Categoria6",
+  "Simbolos", "Descriptores", "Donante", "Escenarios", "Personajes centrales",
+  "Cartela_filacteria", "Tipo relato_visual", "Tipo_gestual", "Objetos personaje central",
+  "Complejo_gestual", "Fisiognomica", "Fisiognomica_imagen", "Rostro posición",
+  "Gesto1", "Gesto2", "Gesto3", "colectivo", "Género",
+  "Edad: niñez", "Presencia: niños", "Edad: adolescencia-juventud", "Edad: adulto", "Edad: anciano",
+  "Personaje: desnudo parcial / total", "Personaje: contacto corporal", "Presencia: animales",
+  "Escena: simple/compuesta", "Imagen dentro de la imagen", "Personajes: sagrados/profanos",
+];
+
+function fieldnames() {
+  return ["archivo_imagen", ...COLUMNAS_ADMINISTRATIVAS, ...COLUMNAS_CLASIFICACION, "notas_para_revision_humana"];
+}
+
+const CLASSIFY_TOOL = {
+  name: "clasificar_pintura",
+  description: "Registra la clasificacion iconografica/formal de una pintura colonial segun el esquema ARCA.",
+  input_schema: {
+    type: "object",
+    properties: {
+      categoria_ruta: {
+        type: "array",
+        items: { type: "string" },
+        description: "1 a 6 elementos: Categoria1, Categoria2, ... en orden, siguiendo una de las rutas existentes (o nueva si es necesario).",
+      },
+      categoria_nueva: { type: "boolean", description: "true si la ruta de categoria no existia en la lista y es una propuesta nueva" },
+      simbolos: { type: "array", items: { type: "string" } },
+      descriptores: { type: "array", items: { type: "string" } },
+      donante: { type: "string" },
+      escenarios: { type: "array", items: { type: "string" }, description: "normalmente 1 solo valor, dominante" },
+      personajes_centrales: { type: "array", items: { type: "string" } },
+      cartela_filacteria: { type: "string" },
+      tipo_relato_visual: { type: "string" },
+      tipo_gestual: { type: "string" },
+      objetos_personaje_central: { type: "array", items: { type: "string" } },
+      complejo_gestual: { type: "string" },
+      postura_cuerpo: { type: "string", description: "campo Fisiognomica" },
+      encuadre_imagen: { type: "string", description: "campo Fisiognomica_imagen" },
+      rostro_posicion: { type: "string" },
+      gestos: {
+        type: "array",
+        items: { type: "string" },
+        maxItems: 3,
+        description: "hasta 3 gestos, en el formato de la lista de gestos conocidos",
+      },
+      gesto_revisar: { type: "boolean" },
+      colectivo: { type: "string", enum: ["Personaje colectivo", "Personaje individual", "No aplica"] },
+      genero: { type: "string", enum: ["Género masculino", "Género femenino", "Género masculino/femenino", "No aplica"] },
+      edad_ninez: { type: "boolean" },
+      presencia_ninos: { type: "boolean" },
+      edad_adolescencia_juventud: { type: "boolean" },
+      edad_adulto: { type: "boolean" },
+      edad_anciano: { type: "boolean" },
+      desnudo_parcial_total: { type: "boolean" },
+      contacto_corporal: { type: "boolean" },
+      presencia_animales: { type: "boolean" },
+      escena_compuesta: { type: "boolean", description: "true = 'Escena: compuesta', false = 'Escena: simple'" },
+      imagen_dentro_de_imagen: { type: "boolean" },
+      personajes_sagrados_profanos: {
+        type: "string",
+        enum: ["Personajes: sagrados", "Personajes: profanos", "Personajes: sagrados y profanos"],
+      },
+      notas_para_revision_humana: {
+        type: "string",
+        description: "cualquier duda, ambiguedad o campo de baja confianza que un humano deba revisar",
+      },
+    },
+    required: [
+      "categoria_ruta", "donante", "escenarios", "cartela_filacteria", "tipo_relato_visual",
+      "tipo_gestual", "complejo_gestual", "postura_cuerpo", "encuadre_imagen", "rostro_posicion",
+      "colectivo", "genero", "personajes_sagrados_profanos", "escena_compuesta",
+    ],
+  },
+};
+
+function buildCategoriaPaths(tree, prefix) {
+  prefix = prefix || [];
+  const entries = Object.entries(tree || {});
+  if (entries.length === 0) return [prefix];
+  let paths = [];
+  for (const [key, sub] of entries) {
+    paths = paths.concat(buildCategoriaPaths(sub, [...prefix, key]));
+  }
+  return paths;
+}
+
+function buildSystemPrompt(vocab, gestos, categoriaTree, personajes, simbolos, descriptores, objetos) {
+  const categoriaLines = buildCategoriaPaths(categoriaTree).map(p => p.join(" > ")).sort().join("\n");
+  const gestoLines = gestos.map(g => `- ${g.gesto}`).join("\n");
+  const topPersonajes = personajes.slice(0, 400).map(p => `- ${p}`).join("\n");
+  const topSimbolos = simbolos.map(s => `- ${s}`).join("\n");
+  const topDescriptores = descriptores.map(d => `- ${d}`).join("\n");
+  const topObjetos = objetos.map(o => `- ${o}`).join("\n");
+  const list = (arr) => arr.map(v => "- " + v).join("\n");
+
+  return `Eres un asistente experto en iconografia colonial hispanoamericana (siglos XVI-XIX),
+ayudando a catalogar imagenes para el proyecto ARCA (Jaime Borja).
+
+Tu tarea: mirar la imagen de una pintura/grabado colonial y clasificarla segun
+el esquema de columnas de la base de datos ARCA, devolviendo un JSON estricto
+mediante la herramienta \`clasificar_pintura\`.
+
+REGLAS GENERALES
+- Usa preferentemente los valores de las listas controladas que te doy abajo,
+  porque son el vocabulario REAL ya usado en ~27,000 registros de la base de
+  datos existente. Reutilizar valores existentes evita duplicados y variantes
+  inconsistentes (p.ej. "Agustin" vs "Agustín" vs "San Agustín").
+- Solo propon un valor nuevo (fuera de las listas) cuando de verdad no exista
+  nada parecido; en ese caso marca el campo \`revisar\` correspondiente en true
+  para que un humano lo confirme.
+- Los personajes se listan INDIVIDUALMENTE, nunca agrupados (ej: si aparecen
+  "la Virgen y dos angeles" se listan como ["Virgen", "Angel"], no como una
+  sola entrada). Excepcion: parejas indisolubles de una misma escena conocida
+  (ej. "Judit y Holofernes") pueden ir juntas si asi aparecen en la lista de
+  personajes conocidos.
+- Si un personaje es un santo y no esta ya en la lista de conocidos con el
+  titulo "San/Santa", pon el nombre y el titulo AL FINAL (ej. "Agustín (SAN)"),
+  siguiendo la convencion del proyecto.
+- Ten en cuenta la DERECHA de la pintura = IZQUIERDA de quien observa, al
+  describir gestos o posiciones relativas.
+- Los gestos son aproximados; elige el mas cercano de la lista. Si hay un
+  gesto claro que no calza con ninguno de la lista, descríbelo en el mismo
+  formato ("Accion mano/brazo: sentido") y marca \`gesto_revisar\` en true.
+- Si un campo no aplica a la imagen (p.ej. no hay cartela ni texto alguno),
+  usa el valor "Ninguna"/"No aplica" segun corresponda, no lo dejes ambiguo.
+- Para las columnas categoricas de Edad, Desnudo, Contacto corporal, Animales
+  e "Imagen dentro de la imagen" responde simplemente true/false: el script
+  se encarga de traducirlo al formato de la base de datos.
+- Escena: simple/compuesta -> "compuesta" si cuenta una historia, es alegorica,
+  historiada, o tiene muchos elementos visuales; "simple" en caso contrario.
+- No inventes fecha, autor, titulo ni lugar: esos campos los gestiona el
+  catalogador aparte y no se te piden aqui.
+
+## Categoria1 > Categoria2 > Categoria3 > Categoria4 > Categoria5 > Categoria6
+Elige la ruta EXISTENTE que mejor describa el tema iconografico principal de
+la pintura (santo representado, episodio mariologico, pasaje cristologico,
+tipo de retrato, etc). No necesitas llenar los 6 niveles: usa tantos como la
+ruta existente tenga y deja el resto vacio. Rutas existentes (una por linea,
+de mas general a mas especifica):
+${categoriaLines}
+
+## Donante (una opcion)
+${list(vocab.donante)}
+
+## Escenarios (una opcion, la dominante)
+${list(vocab.escenarios)}
+
+## Tipo relato_visual (una opcion, la mas representativa)
+${list(vocab.tipo_relato_visual)}
+
+## Tipo_gestual (una opcion)
+${list(vocab.tipo_gestual)}
+("Gesto" = hay gesto corporal significativo; "Objeto" = el sentido se
+transmite por un objeto/atributo sin gesto destacable; "Gesto-objeto" = ambos;
+"No aplica" = ni gesto ni objeto relevante)
+
+## Complejo_gestual (una opcion)
+${list(vocab.complejo_gestual)}
+
+## Fisiognomica = postura corporal (una opcion)
+${list(vocab.postura_cuerpo)}
+
+## Fisiognomica_imagen = encuadre (una opcion)
+${list(vocab.encuadre_imagen)}
+
+## Rostro posición (una opcion)
+${list(vocab.rostro_posicion)}
+
+## Cartela_filacteria (una opcion)
+${list(vocab.cartela_filacteria)}
+
+## Gestos conocidos (Gesto1/Gesto2/Gesto3, hasta 3, en orden de importancia)
+${gestoLines}
+
+## Personajes centrales mas frecuentes en la base (reutiliza si aplica)
+${topPersonajes}
+
+## Simbolos conocidos (reutiliza si aplica)
+${topSimbolos}
+
+## Descriptores conocidos (reutiliza si aplica)
+${topDescriptores}
+
+## Objetos de personaje central conocidos (reutiliza si aplica)
+${topObjetos}
+`;
+}
+
+function rowFromResult(result) {
+  const row = {};
+  const ruta = (result.categoria_ruta || []).slice(0, 6);
+  for (let i = 0; i < 6; i++) row[`Categoria${i + 1}`] = ruta[i] || "";
+
+  row["Simbolos"] = (result.simbolos || []).join(", ");
+  row["Descriptores"] = (result.descriptores || []).join(", ");
+  row["Donante"] = result.donante || "";
+  row["Escenarios"] = (result.escenarios || []).join(", ");
+  row["Personajes centrales"] = (result.personajes_centrales || []).join(", ");
+  row["Cartela_filacteria"] = result.cartela_filacteria || "";
+  row["Tipo relato_visual"] = result.tipo_relato_visual || "";
+  row["Tipo_gestual"] = result.tipo_gestual || "";
+  row["Objetos personaje central"] = (result.objetos_personaje_central || []).join(", ");
+  row["Complejo_gestual"] = result.complejo_gestual || "";
+  row["Fisiognomica"] = result.postura_cuerpo || "";
+  row["Fisiognomica_imagen"] = result.encuadre_imagen || "";
+  row["Rostro posición"] = result.rostro_posicion || "";
+
+  const gestos = (result.gestos || []).slice(0, 3);
+  for (let i = 0; i < 3; i++) row[`Gesto${i + 1}`] = gestos[i] || "";
+
+  row["colectivo"] = result.colectivo || "";
+  row["Género"] = result.genero || "";
+
+  const boolMap = {
+    edad_ninez: "Edad: niñez",
+    presencia_ninos: "Presencia: niños",
+    edad_adolescencia_juventud: "Edad: adolescencia-juventud",
+    edad_adulto: "Edad: adulto",
+    edad_anciano: "Edad: anciano",
+    desnudo_parcial_total: "Personaje: desnudo parcial / total",
+    contacto_corporal: "Personaje: contacto corporal",
+    presencia_animales: "Presencia: animales",
+    imagen_dentro_de_imagen: "Imagen dentro de la imagen",
+  };
+  for (const [field, column] of Object.entries(boolMap)) {
+    row[column] = result[field] ? column : "";
+  }
+
+  row["Escena: simple/compuesta"] = result.escena_compuesta ? "Escena: compuesta" : "Escena: simple";
+  row["Personajes: sagrados/profanos"] = result.personajes_sagrados_profanos || "";
+  return row;
+}
+
+function csvEscape(value) {
+  const s = (value ?? "").toString();
+  if (/[;"\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+
+function filasToCsv(rows) {
+  const cols = fieldnames();
+  const lines = [cols.join(";")];
+  rows.forEach(row => lines.push(cols.map(c => csvEscape(row[c])).join(";")));
+  return "﻿" + lines.join("\r\n") + "\r\n";
+}
+
+function descargarCsv(rows) {
+  if (rows.length === 0) { alert("No hay filas guardadas para descargar."); return; }
+  const csv = filasToCsv(rows);
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "clasificaciones_nuevas.csv";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(",")[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function mediaTypeFor(filename) {
+  const ext = filename.toLowerCase().split(".").pop();
+  return { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", webp: "image/webp", gif: "image/gif" }[ext] || "image/jpeg";
+}
+
+async function clasificarConClaude(apiKey, base64, mediaType, filename) {
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true",
+    },
+    body: JSON.stringify({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 2048,
+      system: [{ type: "text", text: SYSTEM_PROMPT, cache_control: { type: "ephemeral" } }],
+      tools: [CLASSIFY_TOOL],
+      tool_choice: { type: "tool", name: "clasificar_pintura" },
+      messages: [{
+        role: "user",
+        content: [
+          { type: "image", source: { type: "base64", media_type: mediaType, data: base64 } },
+          { type: "text", text: `Clasifica esta pintura colonial (${filename}) segun el esquema ARCA.` },
+        ],
+      }],
+    }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message || `HTTP ${res.status}`);
+  const toolUse = (data.content || []).find(b => b.type === "tool_use");
+  if (!toolUse) throw new Error("La respuesta no incluyo una clasificacion");
+  return toolUse.input;
+}
+
+// key, label, type ('text'|'select'|'checkbox'), vocabKey (para <select> o <datalist>), list (id de datalist)
+const ADMIN_FIELDS = [
+  ["registro", "Registro"], ["titulo", "Titulo"], ["Fecha", "Fecha"], ["Autores", "Autores"],
+  ["Técnicas", "Tecnica"], ["Ciudad_origen", "Ciudad origen"], ["Pais_origen", "Pais origen"],
+  ["Ciudad_actual", "Ciudad actual"], ["Pais_actual", "Pais actual"], ["Lugar ubicacion", "Lugar/ubicacion"],
+];
+
+const CLASS_FIELDS = [
+  { key: "Categoria1", label: "Categoria 1", type: "text", listId: "dl-categoria1" },
+  { key: "Categoria2", label: "Categoria 2", type: "text" },
+  { key: "Categoria3", label: "Categoria 3", type: "text" },
+  { key: "Categoria4", label: "Categoria 4", type: "text" },
+  { key: "Categoria5", label: "Categoria 5", type: "text" },
+  { key: "Categoria6", label: "Categoria 6", type: "text" },
+  { key: "Simbolos", label: "Simbolos (separados por coma)", type: "text", listId: "dl-simbolos" },
+  { key: "Descriptores", label: "Descriptores (coma)", type: "text", listId: "dl-descriptores" },
+  { key: "Donante", label: "Donante", type: "select", vocabKey: "donante" },
+  { key: "Escenarios", label: "Escenarios", type: "text", listId: "dl-escenarios" },
+  { key: "Personajes centrales", label: "Personajes centrales (coma)", type: "text", listId: "dl-personajes" },
+  { key: "Cartela_filacteria", label: "Cartela / filacteria", type: "select", vocabKey: "cartela_filacteria" },
+  { key: "Tipo relato_visual", label: "Tipo de relato visual", type: "select", vocabKey: "tipo_relato_visual" },
+  { key: "Tipo_gestual", label: "Tipo gestual", type: "select", vocabKey: "tipo_gestual" },
+  { key: "Objetos personaje central", label: "Objetos de personaje central (coma)", type: "text", listId: "dl-objetos" },
+  { key: "Complejo_gestual", label: "Complejo gestual", type: "select", vocabKey: "complejo_gestual" },
+  { key: "Fisiognomica", label: "Postura corporal", type: "select", vocabKey: "postura_cuerpo" },
+  { key: "Fisiognomica_imagen", label: "Encuadre de la imagen", type: "select", vocabKey: "encuadre_imagen" },
+  { key: "Rostro posición", label: "Posicion del rostro", type: "select", vocabKey: "rostro_posicion" },
+  { key: "Gesto1", label: "Gesto 1", type: "text", listId: "dl-gestos" },
+  { key: "Gesto2", label: "Gesto 2", type: "text", listId: "dl-gestos" },
+  { key: "Gesto3", label: "Gesto 3", type: "text", listId: "dl-gestos" },
+  { key: "colectivo", label: "Colectivo / individual", type: "select", options: ["Personaje colectivo", "Personaje individual", "No aplica"] },
+  { key: "Género", label: "Genero", type: "select", options: ["Género masculino", "Género femenino", "Género masculino/femenino", "No aplica"] },
+];
+
+const BOOL_FIELDS = [
+  ["Edad: niñez", "Edad: niñez"],
+  ["Presencia: niños", "Presencia de niños"],
+  ["Edad: adolescencia-juventud", "Edad: adolescencia/juventud"],
+  ["Edad: adulto", "Edad: adulto"],
+  ["Edad: anciano", "Edad: anciano"],
+  ["Personaje: desnudo parcial / total", "Desnudo parcial/total"],
+  ["Personaje: contacto corporal", "Contacto corporal"],
+  ["Presencia: animales", "Presencia de animales"],
+  ["Imagen dentro de la imagen", "Imagen dentro de la imagen"],
+];
+
+const FINAL_FIELDS = [
+  { key: "Escena: simple/compuesta", label: "Escena", type: "select", options: ["Escena: simple", "Escena: compuesta"] },
+  { key: "Personajes: sagrados/profanos", label: "Personajes sagrados/profanos", type: "select",
+    options: ["Personajes: sagrados", "Personajes: profanos", "Personajes: sagrados y profanos"] },
+];
+
+let VOCAB = null;
+let SYSTEM_PROMPT = null;
+let cards = {}; // id -> {file, row, status, errorMsg}
+let cardCounter = 0;
+
+const LS_KEY = "arca_anthropic_api_key";
+
+function getApiKey() {
+  return (document.getElementById("apikey-input").value || "").trim() || localStorage.getItem(LS_KEY) || "";
+}
+
+function actualizarEstado() {
+  const dot = document.getElementById("status-dot");
+  const text = document.getElementById("status-text");
+  if (getApiKey()) {
+    dot.className = "dot ok";
+    text.textContent = "API key lista (guardada solo en este navegador)";
+  } else {
+    dot.className = "dot err";
+    text.textContent = "Falta pegar tu API key de Anthropic (abajo)";
+  }
+}
+
+function initApiKeyBar() {
+  const input = document.getElementById("apikey-input");
+  const guardada = localStorage.getItem(LS_KEY);
+  if (guardada) input.value = guardada;
+  actualizarEstado();
+
+  document.getElementById("btn-apikey-guardar").addEventListener("click", () => {
+    const key = input.value.trim();
+    if (!key) { alert("Pega tu API key primero."); return; }
+    localStorage.setItem(LS_KEY, key);
+    actualizarEstado();
+    const msg = document.getElementById("apikey-msg");
+    msg.textContent = "Key guardada en este navegador.";
+    setTimeout(() => { msg.textContent = ""; }, 3000);
+  });
+
+  document.getElementById("btn-apikey-mostrar").addEventListener("click", (e) => {
+    const showing = input.type === "text";
+    input.type = showing ? "password" : "text";
+    e.target.textContent = showing ? "Mostrar" : "Ocultar";
+  });
+
+  document.getElementById("btn-apikey-borrar").addEventListener("click", () => {
+    input.value = "";
+    localStorage.removeItem(LS_KEY);
+    actualizarEstado();
+    const msg = document.getElementById("apikey-msg");
+    msg.textContent = "Key borrada.";
+    setTimeout(() => { msg.textContent = ""; }, 3000);
+  });
+}
+
+function buildDatalist(id, values) {
+  const dl = document.createElement("datalist");
+  dl.id = id;
+  (values || []).forEach(v => {
+    const opt = document.createElement("option");
+    opt.value = v;
+    dl.appendChild(opt);
+  });
+  document.body.appendChild(dl);
+}
+
+async function cargarReferencias() {
+  const [vocab, gestos, categoriaTree, personajes, simbolos, descriptores, objetos] = await Promise.all([
+    fetch("./vocabularios.json").then(r => r.json()),
+    fetch("./gestos.json").then(r => r.json()),
+    fetch("./categoria_tree.json").then(r => r.json()),
+    fetch("./personajes_conocidos.json").then(r => r.json()),
+    fetch("./simbolos_conocidos.json").then(r => r.json()),
+    fetch("./descriptores_conocidos.json").then(r => r.json()),
+    fetch("./objetos_conocidos.json").then(r => r.json()),
+  ]);
+  const categoria1 = Array.from(new Set(buildCategoriaPaths(categoriaTree).map(p => p[0]).filter(Boolean))).sort();
+  VOCAB = { vocab, gestos: gestos.map(g => g.gesto), categoria1, personajes, simbolos, descriptores, objetos };
+
+  buildDatalist("dl-categoria1", VOCAB.categoria1);
+  buildDatalist("dl-simbolos", VOCAB.simbolos);
+  buildDatalist("dl-descriptores", VOCAB.descriptores);
+  buildDatalist("dl-personajes", VOCAB.personajes);
+  buildDatalist("dl-objetos", VOCAB.objetos);
+  buildDatalist("dl-gestos", VOCAB.gestos);
+  buildDatalist("dl-escenarios", VOCAB.vocab.escenarios);
+
+  SYSTEM_PROMPT = buildSystemPrompt(vocab, gestos, categoriaTree, personajes, simbolos, descriptores, objetos);
+}
+
+function selectOptions(values, current) {
+  return ["", ...values].map(v =>
+    `<option value="${escapeHtml(v)}" ${v === current ? "selected" : ""}>${v === "" ? "-" : escapeHtml(v)}</option>`
+  ).join("");
+}
+
+function escapeHtml(s) {
+  return (s ?? "").toString().replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function renderFieldGroup(fields, row, cardId) {
+  return fields.map(f => {
+    const val = row[f.key] ?? "";
+    const inputId = `f-${cardId}-${f.key}`;
+    if (f.type === "select") {
+      const opts = f.vocabKey ? VOCAB.vocab[f.vocabKey] : f.options;
+      return `<div class="field"><label for="${inputId}">${f.label}</label>
+        <select id="${inputId}" data-key="${f.key}">${selectOptions(opts, val)}</select></div>`;
+    }
+    const list = f.listId ? ` list="${f.listId}"` : "";
+    return `<div class="field"><label for="${inputId}">${f.label}</label>
+      <input type="text" id="${inputId}" data-key="${f.key}" value="${escapeHtml(val)}"${list} /></div>`;
+  }).join("");
+}
+
+function renderBooleanGrid(row, cardId) {
+  return `<div class="checkbox-grid">` + BOOL_FIELDS.map(([key, label]) => {
+    const checked = row[key] ? "checked" : "";
+    const inputId = `f-${cardId}-bool-${key}`;
+    return `<div class="field checkbox">
+      <input type="checkbox" id="${inputId}" data-boolkey="${key}" ${checked} />
+      <label for="${inputId}">${label}</label>
+    </div>`;
+  }).join("") + `</div>`;
+}
+
+function cardHtml(c) {
+  const row = c.row || {};
+  let body = "";
+  if (c.status === "listo" || c.status === "guardado") {
+    body = `
+      <fieldset><legend>Metadatos (opcionales, no los genera la IA)</legend>
+        ${renderFieldGroup(ADMIN_FIELDS.map(([k, l]) => ({ key: k, label: l, type: "text" })), row, c.id)}
+      </fieldset>
+      <fieldset><legend>Clasificacion sugerida (revisa y edita)</legend>
+        ${renderFieldGroup(CLASS_FIELDS, row, c.id)}
+      </fieldset>
+      <fieldset><legend>Edad / presencia / caracteristicas</legend>
+        ${renderBooleanGrid(row, c.id)}
+      </fieldset>
+      <fieldset><legend>Escena y personajes</legend>
+        ${renderFieldGroup(FINAL_FIELDS, row, c.id)}
+      </fieldset>
+      <div class="field">
+        <label>Notas para revision humana</label>
+        <textarea rows="2" data-key="notas_para_revision_humana">${escapeHtml(row["notas_para_revision_humana"])}</textarea>
+      </div>
+    `;
+  } else if (c.status === "error") {
+    body = `<div class="error-msg">${escapeHtml(c.errorMsg || "Error desconocido")}</div>`;
+  }
+
+  return `
+    <div class="thumb-row">
+      <img class="thumb" src="${c.objectUrl}" />
+      <div class="meta">
+        <div class="filename">${escapeHtml(c.file.name)}</div>
+        <span class="badge ${c.status}">${badgeLabel(c.status)}</span>
+        <div><span class="toggle-link" data-action="toggle">${c.expanded ? "ocultar" : "ver/editar campos"}</span></div>
+      </div>
+    </div>
+    <div class="body">${body}</div>
+    <div class="actions">
+      <button class="secondary small" data-action="reclasificar" ${c.status === "clasificando" ? "disabled" : ""}>
+        ${botonClasificarLabel(c.status)}
+      </button>
+      <button class="small" data-action="guardar" ${c.status !== "listo" ? "disabled" : ""}>Guardar</button>
+    </div>
+  `;
+}
+
+function badgeLabel(status) {
+  return {
+    pendiente: "Pendiente",
+    clasificando: "Clasificando...",
+    listo: "Listo para revisar",
+    guardado: "Guardado",
+    error: "Error",
+  }[status] || status;
+}
+
+function botonClasificarLabel(status) {
+  return {
+    pendiente: "Clasificar",
+    clasificando: "Clasificando...",
+    error: "Reintentar",
+    listo: "Reclasificar",
+    guardado: "Reclasificar",
+  }[status] || "Clasificar";
+}
+
+function renderCard(c) {
+  let el = document.getElementById(c.id);
+  if (!el) {
+    el = document.createElement("div");
+    el.className = "card";
+    el.id = c.id;
+    document.getElementById("grid").appendChild(el);
+  }
+  el.classList.toggle("expanded", !!c.expanded);
+  el.innerHTML = cardHtml(c);
+
+  el.querySelector('[data-action="toggle"]').addEventListener("click", () => {
+    c.expanded = !c.expanded;
+    renderCard(c);
+  });
+  el.querySelector('[data-action="reclasificar"]').addEventListener("click", () => clasificarCard(c));
+  el.querySelector('[data-action="guardar"]').addEventListener("click", () => guardarCard(c));
+
+  el.querySelectorAll("[data-key]").forEach(input => {
+    input.addEventListener("input", () => { c.row[input.dataset.key] = input.value; });
+    input.addEventListener("change", () => { c.row[input.dataset.key] = input.value; });
+  });
+  el.querySelectorAll("[data-boolkey]").forEach(input => {
+    input.addEventListener("change", () => { c.row[input.dataset.boolkey] = input.checked ? input.dataset.boolkey : ""; });
+  });
+
+  updateToolbarInfo();
+}
+
+function updateToolbarInfo() {
+  const all = Object.values(cards);
+  const listas = all.filter(c => c.status === "listo").length;
+  const guardadas = all.filter(c => c.status === "guardado").length;
+  document.getElementById("toolbar-info").textContent =
+    `${all.length} imagenes cargadas - ${listas} listas para guardar - ${guardadas} guardadas (sin descargar)`;
+}
+
+function agregarArchivos(fileList) {
+  document.getElementById("empty-hint").style.display = "none";
+  Array.from(fileList).forEach(file => {
+    const id = "card-" + (++cardCounter);
+    const c = {
+      id, file, status: "pendiente", expanded: false,
+      objectUrl: URL.createObjectURL(file),
+      row: { archivo_imagen: file.name },
+    };
+    cards[id] = c;
+    renderCard(c);
+    clasificarCard(c);
+  });
+}
+
+async function clasificarCard(c) {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    c.status = "error";
+    c.errorMsg = "Pega tu API key de Anthropic arriba y hace click en 'Guardar key' primero.";
+    c.expanded = true;
+    renderCard(c);
+    return;
+  }
+  if (!SYSTEM_PROMPT) {
+    c.status = "error";
+    c.errorMsg = "Los datos de referencia todavia no cargaron. Espera unos segundos y reintenta.";
+    c.expanded = true;
+    renderCard(c);
+    return;
+  }
+  c.status = "clasificando";
+  renderCard(c);
+  try {
+    const base64 = await fileToBase64(c.file);
+    const mediaType = mediaTypeFor(c.file.name);
+    const result = await clasificarConClaude(apiKey, base64, mediaType, c.file.name);
+
+    const row = { archivo_imagen: c.file.name };
+    COLUMNAS_ADMINISTRATIVAS.forEach(col => { row[col] = ""; });
+    Object.assign(row, rowFromResult(result));
+    let notas = result.notas_para_revision_humana || "";
+    if (result.categoria_nueva) notas = "[CATEGORIA NUEVA - revisar] " + notas;
+    if (result.gesto_revisar) notas = "[GESTO NO ESTANDAR - revisar] " + notas;
+    row["notas_para_revision_humana"] = notas;
+
+    c.row = row;
+    c.status = "listo";
+    c.expanded = true;
+  } catch (e) {
+    c.status = "error";
+    c.errorMsg = e.message;
+    c.expanded = true;
+  }
+  renderCard(c);
+}
+
+function guardarCard(c) {
+  c.status = "guardado";
+  renderCard(c);
+}
+
+document.getElementById("btn-clasificar-todas").addEventListener("click", () => {
+  Object.values(cards).filter(c => c.status === "pendiente" || c.status === "error").forEach(clasificarCard);
+});
+
+document.getElementById("btn-guardar-todas").addEventListener("click", () => {
+  const listas = Object.values(cards).filter(c => c.status === "listo");
+  if (listas.length === 0) { alert("No hay imagenes listas para guardar."); return; }
+  listas.forEach(c => { c.status = "guardado"; renderCard(c); });
+});
+
+document.getElementById("btn-descargar-csv").addEventListener("click", () => {
+  const guardadas = Object.values(cards).filter(c => c.status === "guardado").map(c => c.row);
+  descargarCsv(guardadas);
+});
+
+const dropzone = document.getElementById("dropzone");
+const fileInput = document.getElementById("file-input");
+dropzone.addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", e => agregarArchivos(e.target.files));
+["dragenter", "dragover"].forEach(evt =>
+  dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.add("drag"); })
+);
+["dragleave", "drop"].forEach(evt =>
+  dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.remove("drag"); })
+);
+dropzone.addEventListener("drop", e => agregarArchivos(e.dataTransfer.files));
+
+initApiKeyBar();
+cargarReferencias();
+</script>
+</body>
+</html>

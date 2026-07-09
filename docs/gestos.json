@@ -1,0 +1,830 @@
+[
+  {
+    "gesto": "Oro: pedir misericordia",
+    "frecuencia": 2961
+  },
+  {
+    "gesto": "Mano derecha tres dedos: bendición o pedir silencio",
+    "frecuencia": 1527
+  },
+  {
+    "gesto": "Manos/brazos cruzadas pecho",
+    "frecuencia": 1269
+  },
+  {
+    "gesto": "Mano extendida pecho: aseverar",
+    "frecuencia": 971
+  },
+  {
+    "gesto": "Entregar algo",
+    "frecuencia": 824
+  },
+  {
+    "gesto": "Ploro: condolerse",
+    "frecuencia": 789
+  },
+  {
+    "gesto": "Señalar con dedo: mando, orden, traicionar",
+    "frecuencia": 734
+  },
+  {
+    "gesto": "Manos atadas: sacrificio",
+    "frecuencia": 564
+  },
+  {
+    "gesto": "Abrazar: tenerlo en corazón",
+    "frecuencia": 540
+  },
+  {
+    "gesto": "Indice arriba: amenaza, denuncia",
+    "frecuencia": 529
+  },
+  {
+    "gesto": "Mano abierta sobre corazón: afirmar testimonio, jura",
+    "frecuencia": 487
+  },
+  {
+    "gesto": "Cargar o sostener:",
+    "frecuencia": 411
+  },
+  {
+    "gesto": "Compuesto: mano al pecho - mano abierta",
+    "frecuencia": 364
+  },
+  {
+    "gesto": "Tocar pie: humildad, sometimiento",
+    "frecuencia": 331
+  },
+  {
+    "gesto": "Llevar de la mano: cuidar débiles",
+    "frecuencia": 311
+  },
+  {
+    "gesto": "Mano palma al frente",
+    "frecuencia": 307
+  },
+  {
+    "gesto": "Mano abierta, girada: proferir razones",
+    "frecuencia": 301
+  },
+  {
+    "gesto": "Brazo abatidos: desesperación, sin valor",
+    "frecuencia": 298
+  },
+  {
+    "gesto": "Brazos a los lados: satisfacer, solicitar, rogar",
+    "frecuencia": 285
+  },
+  {
+    "gesto": "Mano extendida frente: bendecir, absolución, perdón",
+    "frecuencia": 254
+  },
+  {
+    "gesto": "Mano semiescondida pecho",
+    "frecuencia": 252
+  },
+  {
+    "gesto": "Manos paralelas al frente: recibir",
+    "frecuencia": 238
+  },
+  {
+    "gesto": "Mano a cintura:",
+    "frecuencia": 231
+  },
+  {
+    "gesto": "Suplico ora: implorar",
+    "frecuencia": 223
+  },
+  {
+    "gesto": "Tocar espalda: Incitar, animar",
+    "frecuencia": 220
+  },
+  {
+    "gesto": "Sostener cabeza: meditar",
+    "frecuencia": 206
+  },
+  {
+    "gesto": "Mano hueca levantada: anima, exhorta",
+    "frecuencia": 194
+  },
+  {
+    "gesto": "Compuesto: palma frente - Abajo arriba",
+    "frecuencia": 184
+  },
+  {
+    "gesto": "Llorar: tristeza, sentimiento",
+    "frecuencia": 177
+  },
+  {
+    "gesto": "Acariciar cabeza: humor, afecto",
+    "frecuencia": 176
+  },
+  {
+    "gesto": "Tomarse la mano a sí: Esperar, paciencia",
+    "frecuencia": 173
+  },
+  {
+    "gesto": "Brazos extendidos: desecadenar asunto por antítesis",
+    "frecuencia": 172
+  },
+  {
+    "gesto": "Acariciar rostro: afecto",
+    "frecuencia": 169
+  },
+  {
+    "gesto": "Palmas extendidas frente hombros: bendición",
+    "frecuencia": 157
+  },
+  {
+    "gesto": "Compuesto: dos abiertas al frente",
+    "frecuencia": 156
+  },
+  {
+    "gesto": "Palma arriba extendida: no posee nada",
+    "frecuencia": 156
+  },
+  {
+    "gesto": "Palma abierta abajo:",
+    "frecuencia": 152
+  },
+  {
+    "gesto": "Brazos muy abiertos: Inmensidad",
+    "frecuencia": 149
+  },
+  {
+    "gesto": "Compuesto: brazos extendidos arriba",
+    "frecuencia": 145
+  },
+  {
+    "gesto": "Mano frente: rechazo, despedir, (también castigo)",
+    "frecuencia": 143
+  },
+  {
+    "gesto": "Mano frente abajo señala: indicar inferior",
+    "frecuencia": 143
+  },
+  {
+    "gesto": "Mano abierta contra el piso: derrota",
+    "frecuencia": 142
+  },
+  {
+    "gesto": "Compuesto: mano bendice - otra pecho",
+    "frecuencia": 139
+  },
+  {
+    "gesto": "Mano frente ladeada dedos",
+    "frecuencia": 133
+  },
+  {
+    "gesto": "Palmas frente al pecho: benevolencia",
+    "frecuencia": 133
+  },
+  {
+    "gesto": "Mano y brazo extendida: triunfo",
+    "frecuencia": 129
+  },
+  {
+    "gesto": "Mano abajo indica: señalar",
+    "frecuencia": 127
+  },
+  {
+    "gesto": "Brazo extendido arriba: protejo",
+    "frecuencia": 122
+  },
+  {
+    "gesto": "Brazos levantados arriba: alegria",
+    "frecuencia": 122
+  },
+  {
+    "gesto": "Palma arriba al frente:",
+    "frecuencia": 121
+  },
+  {
+    "gesto": "Dedos foma de V: bendición",
+    "frecuencia": 119
+  },
+  {
+    "gesto": "Señalar mano",
+    "frecuencia": 118
+  },
+  {
+    "gesto": "Dar mano: amistad, saludo, benevolencia",
+    "frecuencia": 113
+  },
+  {
+    "gesto": "Compuesto: pecho extendida vertical",
+    "frecuencia": 113
+  },
+  {
+    "gesto": "Lactación-amamantar",
+    "frecuencia": 111
+  },
+  {
+    "gesto": "Extender brazo al auxilio: piedad, dar alivio",
+    "frecuencia": 110
+  },
+  {
+    "gesto": "Agarra: acción de autoridad",
+    "frecuencia": 109
+  },
+  {
+    "gesto": "Palmas arriba:",
+    "frecuencia": 108
+  },
+  {
+    "gesto": "Impedir agarrar mano: detener obstaculos",
+    "frecuencia": 107
+  },
+  {
+    "gesto": "Manos abatidas: súplica",
+    "frecuencia": 105
+  },
+  {
+    "gesto": "Mano extendida: mendigar",
+    "frecuencia": 104
+  },
+  {
+    "gesto": "Manos extendidas palmas abierta lados: apertura",
+    "frecuencia": 98
+  },
+  {
+    "gesto": "Estirar la mano: fuerza al discurso",
+    "frecuencia": 98
+  },
+  {
+    "gesto": "Mano al lado de frente:",
+    "frecuencia": 97
+  },
+  {
+    "gesto": "Dos manos arriba: admira, halaga",
+    "frecuencia": 97
+  },
+  {
+    "gesto": "Compuesto: brazos abiertos - mano en v",
+    "frecuencia": 96
+  },
+  {
+    "gesto": "Compuesto: brazo estirado frente - brazo abajo",
+    "frecuencia": 89
+  },
+  {
+    "gesto": "Mano frente dos dedos estirados: pedir silencio dedos, victoria",
+    "frecuencia": 89
+  },
+  {
+    "gesto": "Compuesto: mano arriba - palma abierta arriba",
+    "frecuencia": 87
+  },
+  {
+    "gesto": "Compuesto: pecho - abajo palma piso",
+    "frecuencia": 86
+  },
+  {
+    "gesto": "Palma contra piso:",
+    "frecuencia": 86
+  },
+  {
+    "gesto": "Indice unido pulgar otros sueltos: exordio",
+    "frecuencia": 85
+  },
+  {
+    "gesto": "Extendida adelante: limosna, generoso, libre",
+    "frecuencia": 85
+  },
+  {
+    "gesto": "Indice arriba: amenaza",
+    "frecuencia": 84
+  },
+  {
+    "gesto": "Palma levantada: admira",
+    "frecuencia": 83
+  },
+  {
+    "gesto": "Abrir pecho: fuego místico",
+    "frecuencia": 79
+  },
+  {
+    "gesto": "Mano levantada: silencio",
+    "frecuencia": 78
+  },
+  {
+    "gesto": "Mano extendida adelante: súplica prepara oratoria",
+    "frecuencia": 77
+  },
+  {
+    "gesto": "Mano vertical al frente: bendición",
+    "frecuencia": 76
+  },
+  {
+    "gesto": "Palma frente abajo inclinada:",
+    "frecuencia": 76
+  },
+  {
+    "gesto": "Besar mano: adora, respeto",
+    "frecuencia": 74
+  },
+  {
+    "gesto": "Dedos entrelazados: débil, melancólico",
+    "frecuencia": 71
+  },
+  {
+    "gesto": "Dos brazos arriba: asevera, doble juramento",
+    "frecuencia": 69
+  },
+  {
+    "gesto": "Apoyar mano en otro: confianza amistad",
+    "frecuencia": 68
+  },
+  {
+    "gesto": "Dedo a la boca: silencio, ignorancia",
+    "frecuencia": 68
+  },
+  {
+    "gesto": "Caido brazo arriba: misericordia en la derrota",
+    "frecuencia": 67
+  },
+  {
+    "gesto": "Soster cabeza con palma: melancolía",
+    "frecuencia": 67
+  },
+  {
+    "gesto": "Palma izquierda abierta abajo: perspicacia",
+    "frecuencia": 66
+  },
+  {
+    "gesto": "Compuesto: brazos semiabiertos hombros",
+    "frecuencia": 61
+  },
+  {
+    "gesto": "Mano vertical frente:",
+    "frecuencia": 61
+  },
+  {
+    "gesto": "Manos paralelas: entrega al otro",
+    "frecuencia": 58
+  },
+  {
+    "gesto": "Compuesto: brazos lados",
+    "frecuencia": 55
+  },
+  {
+    "gesto": "Mano estómago: aseverar de sí",
+    "frecuencia": 55
+  },
+  {
+    "gesto": "Entrelazadas altura pecho: dolor tristeza",
+    "frecuencia": 55
+  },
+  {
+    "gesto": "Mano levantada: aprobar, obediencia",
+    "frecuencia": 54
+  },
+  {
+    "gesto": "Entregar tomar mano: presentar, recomendar",
+    "frecuencia": 52
+  },
+  {
+    "gesto": "Palma arriba: señalar",
+    "frecuencia": 50
+  },
+  {
+    "gesto": "Manos entrelazadas: melancolía, espera",
+    "frecuencia": 49
+  },
+  {
+    "gesto": "Compuesto: abajo posiciones lado",
+    "frecuencia": 48
+  },
+  {
+    "gesto": "Mano en la frente: saludo con respeto",
+    "frecuencia": 48
+  },
+  {
+    "gesto": "Levantar algo: exhibir, mostrar",
+    "frecuencia": 48
+  },
+  {
+    "gesto": "Brazos cruzados:",
+    "frecuencia": 44
+  },
+  {
+    "gesto": "Mano estirada a oyentes: voluntad, afectos",
+    "frecuencia": 43
+  },
+  {
+    "gesto": "Mano cabeza: angustia, tristeza",
+    "frecuencia": 43
+  },
+  {
+    "gesto": "Compuesto: señala arriba - indica con la otra",
+    "frecuencia": 43
+  },
+  {
+    "gesto": "Dedos frente cabeza: pensar, reflexión",
+    "frecuencia": 38
+  },
+  {
+    "gesto": "Mano frente forma garra",
+    "frecuencia": 37
+  },
+  {
+    "gesto": "Tocar algo: curiosidad por tacto",
+    "frecuencia": 36
+  },
+  {
+    "gesto": "Mano adelante detiene cabeza atrás: rechazo",
+    "frecuencia": 36
+  },
+  {
+    "gesto": "Mano frente dedos apuntan: señalar",
+    "frecuencia": 34
+  },
+  {
+    "gesto": "Dar mano con golpe: fe, fidelidad, compromiso",
+    "frecuencia": 34
+  },
+  {
+    "gesto": "Mano levanta y brazo: confianza autoridad, pacífica",
+    "frecuencia": 34
+  },
+  {
+    "gesto": "Mano sobre otra: pereza, sueño",
+    "frecuencia": 33
+  },
+  {
+    "gesto": "Parte superior índice sobre uña pulgar: distiguir, aprobar",
+    "frecuencia": 33
+  },
+  {
+    "gesto": "Dos manos al frente: rechazo, odio",
+    "frecuencia": 32
+  },
+  {
+    "gesto": "Golpe de pecho: dolor, contriccion, vergüenza",
+    "frecuencia": 31
+  },
+  {
+    "gesto": "Puño: venganza, reclama justicia",
+    "frecuencia": 29
+  },
+  {
+    "gesto": "Compuesto: señalar - gestos varios",
+    "frecuencia": 29
+  },
+  {
+    "gesto": "Compuesto: palma frente - abajo palma abajo",
+    "frecuencia": 28
+  },
+  {
+    "gesto": "Dos manos entre mangas:",
+    "frecuencia": 28
+  },
+  {
+    "gesto": "Mano abajo forma tenedor",
+    "frecuencia": 28
+  },
+  {
+    "gesto": "Compuesto: mano pecho - indicar",
+    "frecuencia": 28
+  },
+  {
+    "gesto": "Mano frente palma abajo:",
+    "frecuencia": 28
+  },
+  {
+    "gesto": "Compuesto: señala arriba - abierta",
+    "frecuencia": 27
+  },
+  {
+    "gesto": "Compuesto: pecho - abierta arriba",
+    "frecuencia": 27
+  },
+  {
+    "gesto": "Autoseñalarse con gesto",
+    "frecuencia": 26
+  },
+  {
+    "gesto": "Compuesto: brazos apuntan una dirección, rostro otra",
+    "frecuencia": 26
+  },
+  {
+    "gesto": "Compuesto: mano abajo abierta - arriba diversa",
+    "frecuencia": 24
+  },
+  {
+    "gesto": "Tenedor dedos: oponer y reprochar",
+    "frecuencia": 24
+  },
+  {
+    "gesto": "Compuesto: palma frente - arriba abierta",
+    "frecuencia": 22
+  },
+  {
+    "gesto": "Muecas y gestos: burla",
+    "frecuencia": 22
+  },
+  {
+    "gesto": "Indice hacia abajo: impulsa, inculca a auditores",
+    "frecuencia": 20
+  },
+  {
+    "gesto": "Manos entrelazadas:",
+    "frecuencia": 19
+  },
+  {
+    "gesto": "Hacer garra con dedos: Impotencia, indignación",
+    "frecuencia": 18
+  },
+  {
+    "gesto": "Puño arriba: enojo, amenaza, odio",
+    "frecuencia": 18
+  },
+  {
+    "gesto": "Mano en la frente: dolor, vergüenza",
+    "frecuencia": 18
+  },
+  {
+    "gesto": "Mano atrás o juntas: rechazo",
+    "frecuencia": 17
+  },
+  {
+    "gesto": "Compuesto: frente en V - palma",
+    "frecuencia": 17
+  },
+  {
+    "gesto": "Dedos forma señalar",
+    "frecuencia": 16
+  },
+  {
+    "gesto": "Manos bolsillos:",
+    "frecuencia": 16
+  },
+  {
+    "gesto": "Compuesto: brazo abiertos - palma frente piso",
+    "frecuencia": 16
+  },
+  {
+    "gesto": "Indice inclinado: veto, retractarse",
+    "frecuencia": 16
+  },
+  {
+    "gesto": "Compuesto: palma frente - lado abajo",
+    "frecuencia": 16
+  },
+  {
+    "gesto": "Manos juntas al frente: someterse, invocar, implora",
+    "frecuencia": 16
+  },
+  {
+    "gesto": "Taparse la cara: vergüenza",
+    "frecuencia": 16
+  },
+  {
+    "gesto": "Protegerse con brazo:",
+    "frecuencia": 15
+  },
+  {
+    "gesto": "Besar dedo: fe, lealtad, reverencia",
+    "frecuencia": 15
+  },
+  {
+    "gesto": "Compuesto: dedo doblado - mano abajo",
+    "frecuencia": 14
+  },
+  {
+    "gesto": "Compuesto: Palma piso - abajo abierta",
+    "frecuencia": 14
+  },
+  {
+    "gesto": "Puño inclinado respecto al hombro: confirmar, recopilar, refutar",
+    "frecuencia": 13
+  },
+  {
+    "gesto": "Dedos rostro:",
+    "frecuencia": 13
+  },
+  {
+    "gesto": "Compuesto: brazos hombros abajo",
+    "frecuencia": 13
+  },
+  {
+    "gesto": "Compuesto: bendice V - pecho",
+    "frecuencia": 13
+  },
+  {
+    "gesto": "Compuesto: mano frente - otra posicion",
+    "frecuencia": 12
+  },
+  {
+    "gesto": "Indice agachado: contrario, silencio",
+    "frecuencia": 12
+  },
+  {
+    "gesto": "Brazo largo al lado: detener, rechazo mundo",
+    "frecuencia": 11
+  },
+  {
+    "gesto": "Indice presiona pulgar: cumplir discusión",
+    "frecuencia": 11
+  },
+  {
+    "gesto": "Puño en cintura:",
+    "frecuencia": 10
+  },
+  {
+    "gesto": "Dedo en boca: meditación, arrepentido, envidia",
+    "frecuencia": 10
+  },
+  {
+    "gesto": "Palmas sostenidas al frente pecho: conmiseración",
+    "frecuencia": 9
+  },
+  {
+    "gesto": "Pulgar e indice cuerno abajo: interrogatorio juicio",
+    "frecuencia": 9
+  },
+  {
+    "gesto": "Ofrecer mano para beso: muestra de orgullo, desdén",
+    "frecuencia": 9
+  },
+  {
+    "gesto": "Dos manos tocandose punta dedos: meditación",
+    "frecuencia": 8
+  },
+  {
+    "gesto": "Tres dedos oprmidos por pulgar: indignación demostrativa",
+    "frecuencia": 8
+  },
+  {
+    "gesto": "Dos dedos en cintura:",
+    "frecuencia": 8
+  },
+  {
+    "gesto": "Manos entrelazadas, dedos posición:",
+    "frecuencia": 8
+  },
+  {
+    "gesto": "Señalar: silencio bendecir",
+    "frecuencia": 7
+  },
+  {
+    "gesto": "Mano una sobre otra:",
+    "frecuencia": 6
+  },
+  {
+    "gesto": "Mano levantada: juro",
+    "frecuencia": 6
+  },
+  {
+    "gesto": "Indice a la cara: mover, llamar a sí",
+    "frecuencia": 6
+  },
+  {
+    "gesto": "Brazo cruzado al lado: rechazo, lucha",
+    "frecuencia": 6
+  },
+  {
+    "gesto": "Cuerno dedos abajo:",
+    "frecuencia": 6
+  },
+  {
+    "gesto": "Rascarse cabeza: angustia, reflexión",
+    "frecuencia": 6
+  },
+  {
+    "gesto": "Indice tomado: fuerza retórica disputa",
+    "frecuencia": 4
+  },
+  {
+    "gesto": "Dos dedos del medio bajo el pulgar: acción instantánea",
+    "frecuencia": 4
+  },
+  {
+    "gesto": "Numerar con dedos: argumentos",
+    "frecuencia": 4
+  },
+  {
+    "gesto": "Golpearse muslo: enojo, admiracion, asombro",
+    "frecuencia": 4
+  },
+  {
+    "gesto": "Compuesto: bendecir - mano estirada",
+    "frecuencia": 3
+  },
+  {
+    "gesto": "Indice presionado indice: sublima sentido palabras",
+    "frecuencia": 3
+  },
+  {
+    "gesto": "Mano atrás: rechazar, repudiar",
+    "frecuencia": 3
+  },
+  {
+    "gesto": "Mandar beso: amor, respeto a lejanos",
+    "frecuencia": 2
+  },
+  {
+    "gesto": "Dedos paralelos:",
+    "frecuencia": 2
+  },
+  {
+    "gesto": "Dedo medio presiona palma: reproche",
+    "frecuencia": 2
+  },
+  {
+    "gesto": "Rascarse con dedos: imprudencia, afememinado",
+    "frecuencia": 2
+  },
+  {
+    "gesto": "Movimiento afememinado: ayuda a sí mismo",
+    "frecuencia": 2
+  },
+  {
+    "gesto": "Mano arriba dedos juntos: pasaje emocional, indignación",
+    "frecuencia": 2
+  },
+  {
+    "gesto": "Mano estirada: castigo",
+    "frecuencia": 2
+  },
+  {
+    "gesto": "Dar limosna con dedos: tacaño",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Contar con dedos: enumerar",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Abajo mano golpea otra:",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Autoseñalarse mano adelante: hablar de si",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Sostener suave mano: amonestar o persuadir",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Besar indice: reverencia, honor",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Indices paralelos arriba: fuerza de elocución",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Meñique señalando entre dedos: vulgar, respuesta provocación",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Mano en movimiento adelante: resiliente",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Formas varias brazo al pecho:",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Señalar con pulgar: movimiento de mente, argumentos",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Manos separadas: abundancia",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Aplaudir: aprobar, disfrutar",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Mano semi abierta que cae turnos: humilde para hablar",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Meñique fuera del puño: explicar cosas sutiles",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Pulgar atrás: demostrar",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Quitar mano sobre alguien: liberar",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Pulgar agarrado entre mano: avaricia, tacañería",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Mano delante llamando: invitar, traer, advertir",
+    "frecuencia": 1
+  },
+  {
+    "gesto": "Dedo anular va solo mano abierta: accion ligera",
+    "frecuencia": 1
+  }
+]

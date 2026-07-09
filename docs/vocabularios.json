@@ -1,0 +1,118 @@
+{
+  "donante": [
+    "Sin donante",
+    "Español@s y crioll@s",
+    "Donante posiblemente presente",
+    "Donante por el nombre",
+    "Monjas y/o clérigos",
+    "Indígenas"
+  ],
+  "escenarios": [
+    "Sin definir",
+    "Terrestre / paisaje",
+    "Celeste / terrestre",
+    "Terrestre / interior casa-habitación",
+    "Sin definir - claroscuro",
+    "Celeste",
+    "Terrestre / ciudad - poblado",
+    "Escenario simbólico",
+    "Terrestre / cortinaje",
+    "Terrestre / interior templo",
+    "Terrestre / interior - paisaje",
+    "Terrestre otro",
+    "Celeste / escatológico"
+  ],
+  "tipo_relato_visual": [
+    "Devoción",
+    "Vida",
+    "Retrato",
+    "Alegoría/moral",
+    "Visión",
+    "Historia",
+    "Paisaje",
+    "Milagros",
+    "Urbano"
+  ],
+  "tipo_gestual": [
+    "Gesto",
+    "Gesto-objeto",
+    "Objeto",
+    "No aplica"
+  ],
+  "complejo_gestual": [
+    "Simple",
+    "Sin relato gesto",
+    "Complejo",
+    "Complejo historiado"
+  ],
+  "postura_cuerpo": [
+    "De pie",
+    "Sentado",
+    "Arrodillado",
+    "De pie Alzando",
+    "Ambiguo o no notorio",
+    "Sentado alzando",
+    "Tendido",
+    "No aplica",
+    "Elevación",
+    "Ecuestre",
+    "De pie inclinado",
+    "Postrado/agachado",
+    "Alzado",
+    "Arrodillado Alzando"
+  ],
+  "encuadre_imagen": [
+    "Cuerpo entero",
+    "Cuerpo medio",
+    "Cuerpo tres cuartos",
+    "No aplica",
+    "Cabeza"
+  ],
+  "rostro_posicion": [
+    "Rostro 3/4",
+    "Frente",
+    "Perfil",
+    "No aplica",
+    "Composición múltiple"
+  ],
+  "colectivo": [
+    "Personaje colectivo",
+    "Personaje individual",
+    "No aplica"
+  ],
+  "genero": [
+    "Género masculino",
+    "Género femenino",
+    "Género masculino/femenino",
+    "No aplica"
+  ],
+  "cartela_filacteria": [
+    "Ninguna",
+    "Inscripción",
+    "Cartela",
+    "Varios iconotextos",
+    "Cinta",
+    "Escritura en Libro",
+    "Filacteria"
+  ],
+  "personajes_sagrados_profanos": [
+    "Personajes: sagrados",
+    "Personajes: profanos",
+    "Personajes: sagrados y profanos"
+  ],
+  "escena_simple_compuesta": [
+    "Escena: simple",
+    "Escena: compuesta"
+  ],
+  "columnas_booleanas": {
+    "edad_ninez": "Edad: niñez",
+    "presencia_ninos": "Presencia: niños",
+    "edad_adolescencia_juventud": "Edad: adolescencia-juventud",
+    "edad_adulto": "Edad: adulto",
+    "edad_anciano": "Edad: anciano",
+    "desnudo_parcial_total": "Personaje: desnudo parcial / total",
+    "contacto_corporal": "Personaje: contacto corporal",
+    "presencia_animales": "Presencia: animales",
+    "imagen_dentro_de_imagen": "Imagen dentro de la imagen"
+  }
+}

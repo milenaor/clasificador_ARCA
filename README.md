@@ -5,17 +5,22 @@ iconografica de pinturas/grabados coloniales nuevos, siguiendo el esquema de
 columnas de la base de datos ARCA. Genera un CSV nuevo con los resultados,
 listo para revisar y luego sumar a la base de datos real.
 
-Hay dos formas de usarla:
+Hay tres formas de usarla:
 
-- **Interfaz web** (`app.py` + `index.html`) — recomendada para uso normal:
-  arrastras imagenes en el navegador, revisas/editas cada campo sugerido, y
-  guardas. Ver seccion "Interfaz web" abajo.
+- **Pagina web estatica** (`docs/index.html`, publicada en GitHub Pages) —
+  recomendada para uso normal: no requiere instalar nada ni correr ningun
+  servidor. Abris la URL, pegas tu API key, arrastras imagenes, y descargas
+  un CSV con los resultados. Ver seccion "Pagina web (GitHub Pages)" abajo.
+- **Interfaz web local** (`app.py` + `index.html`) — variante con servidor
+  Flask local; guarda el CSV automaticamente en disco en vez de descargarlo.
+  Requiere tener Python instalado y correr `python app.py` cada vez. Ver
+  seccion "Interfaz web local" abajo.
 - **Linea de comandos** (`clasificar_imagenes.py`) — para procesar una
   carpeta entera de golpe sin revisión interactiva. Ver seccion "Linea de
   comandos" abajo.
 
-Ambas comparten los mismos archivos de referencia (vocabularios, gestos,
-arbol de categorias) y escriben al mismo formato de CSV de salida.
+Las tres comparten los mismos archivos de referencia (vocabularios, gestos,
+arbol de categorias) y el mismo formato de CSV de salida.
 
 ## Que hace y que NO hace
 
@@ -83,7 +88,55 @@ python actualizar_referencias.py "ruta/a/Arca exel completo mayo 2026 (1).csv"
    (para que quede permanente entre sesiones, agregala a las variables de
    entorno de usuario de Windows en vez de escribirla cada vez)
 
-## Interfaz web
+## Pagina web (GitHub Pages)
+
+Esta es la forma mas simple de usarlo: no requiere instalar Python ni nada.
+
+1. Abri **https://milenaor.github.io/clasificador_ARCA/** (si todavia no
+   funciona, revisa la seccion "Habilitar GitHub Pages" mas abajo — es un
+   paso unico de configuracion en GitHub).
+2. En la barra debajo del titulo, pega tu API key de Anthropic (`sk-ant-...`)
+   y apreta "Guardar key". Queda guardada **solo en el `localStorage` de tu
+   navegador** — nunca se sube a GitHub ni pasa por ningun servidor
+   intermedio; tus llamadas van directo de tu navegador a la API de
+   Anthropic. "Borrar" la quita de tu navegador (usalo si estas en una
+   computadora compartida).
+3. Arrastra una o varias imagenes al recuadro, o hace click para elegirlas.
+   Se clasifican automaticamente al cargarlas.
+4. Revisa/edita cada tarjeta ("ver/editar campos"), y apreta "Guardar" en
+   las que estén conformes (o "Marcar listas como guardadas" para todas de
+   una vez). Esto NO descarga nada todavia, solo las marca.
+5. Cuando termines, apreta **"Descargar CSV"** — se descarga
+   `clasificaciones_nuevas.csv` con todas las filas marcadas como guardadas,
+   listo para revisar en Excel y copiar a tu base de datos real.
+6. Como no hay servidor, cada vez que recargas la pagina se pierde el estado
+   (imagenes cargadas, marcadas como guardadas). Descarga el CSV antes de
+   cerrar la pestaña si no terminaste.
+
+### Habilitar GitHub Pages (una sola vez)
+
+Si la URL de arriba todavia no funciona, alguien con acceso al repositorio
+debe activarlo una vez:
+
+1. Anda a **https://github.com/milenaor/clasificador_ARCA/settings/pages**
+2. En "Build and deployment" → "Source", elegi **"Deploy from a branch"**.
+3. En "Branch", elegi **`main`** y la carpeta **`/docs`**, despues "Save".
+4. Esperá 1-2 minutos; la URL queda activa en
+   `https://milenaor.github.io/clasificador_ARCA/`.
+
+### Limitaciones de la version estatica
+
+- No hay revision de duplicados entre sesiones (si cargas la misma imagen
+  dos veces en la misma sesion, no se avisa).
+- Si cierras la pestaña sin descargar el CSV, se pierde el trabajo de esa
+  sesion — no hay autoguardado en disco (a diferencia de la version con
+  servidor local, que guarda automaticamente).
+- Cualquiera que abra la URL puede usar la herramienta si pega su *propia*
+  API key — la pagina en si no expone la tuya a nadie mas, pero si compartis
+  la pestaña con la key ya pegada (screen sharing, computadora compartida),
+  quien la vea podria copiarla.
+
+## Interfaz web local
 
 1. Instala dependencias (ver "Instalacion" arriba). No hace falta configurar
    la API key por variable de entorno para usar la interfaz web: se pega
