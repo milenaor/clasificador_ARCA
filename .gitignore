@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+imagenes_procesadas/
+clasificaciones_nuevas.csv
+*.log
+.env

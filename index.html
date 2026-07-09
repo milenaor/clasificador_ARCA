@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Clasificador ARCA</title>
+<style>
+  :root {
+    --bg: #f5f3ee;
+    --panel: #ffffff;
+    --ink: #2b2620;
+    --muted: #756f64;
+    --border: #ddd6c9;
+    --accent: #8a5a2b;
+    --accent-ink: #ffffff;
+    --ok: #3f7d4f;
+    --warn: #b5762b;
+    --err: #b3402f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+  }
+  header {
+    background: var(--accent);
+    color: var(--accent-ink);
+    padding: 1.1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  header h1 { font-size: 1.15rem; margin: 0; font-weight: 600; }
+  header .sub { font-size: 0.8rem; opacity: 0.85; }
+  #status-bar {
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .dot.ok { background: #7ee08f; }
+  .dot.err { background: #f08e7e; }
+
+  main { max-width: 1200px; margin: 0 auto; padding: 1.25rem; }
+
+  #dropzone {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--muted);
+    background: var(--panel);
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  #dropzone.drag { border-color: var(--accent); background: #fbf3e7; }
+  #dropzone input { display: none; }
+
+  #toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem 0;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  #toolbar .info { font-size: 0.85rem; color: var(--muted); }
+
+  button {
+    font: inherit;
+    border: none;
+    border-radius: 7px;
+    padding: 0.5rem 0.9rem;
+    cursor: pointer;
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+  button.secondary { background: var(--panel); color: var(--ink); border: 1px solid var(--border); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button.small { padding: 0.3rem 0.6rem; font-size: 0.8rem; }
+
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1rem;
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .card .thumb-row {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .card img.thumb {
+    width: 84px; height: 84px; object-fit: cover; border-radius: 6px;
+    background: #eee;
+    flex-shrink: 0;
+  }
+  .card .meta { min-width: 0; flex: 1; }
+  .card .filename { font-weight: 600; font-size: 0.85rem; word-break: break-all; }
+  .badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    margin-top: 0.3rem;
+    color: white;
+  }
+  .badge.pendiente { background: var(--muted); }
+  .badge.clasificando { background: var(--warn); }
+  .badge.listo { background: #5b7fbf; }
+  .badge.guardado { background: var(--ok); }
+  .badge.error { background: var(--err); }
+  .badge.duplicado { background: #a06a2a; }
+
+  .card .body {
+    padding: 0.75rem;
+    display: none;
+    max-height: 420px;
+    overflow-y: auto;
+  }
+  .card.expanded .body { display: block; }
+
+  .field { margin-bottom: 0.55rem; }
+  .field label { display: block; font-size: 0.72rem; color: var(--muted); margin-bottom: 0.15rem; }
+  .field input[type=text], .field select, .field textarea {
+    width: 100%;
+    font: inherit;
+    font-size: 0.82rem;
+    padding: 0.3rem 0.4rem;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    background: #fffdf9;
+  }
+  .field.checkbox { display: flex; align-items: center; gap: 0.4rem; }
+  .field.checkbox label { margin: 0; font-size: 0.8rem; color: var(--ink); }
+
+  fieldset { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.75rem; padding: 0.6rem; }
+  legend { font-size: 0.75rem; color: var(--accent); font-weight: 600; padding: 0 0.3rem; }
+
+  .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.2rem 0.5rem; }
+
+  .card .actions {
+    padding: 0.6rem 0.75rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .card .error-msg { color: var(--err); font-size: 0.78rem; padding: 0.5rem 0.75rem; }
+
+  .toggle-link { font-size: 0.75rem; color: var(--accent); cursor: pointer; text-decoration: underline; }
+
+  #empty-hint { color: var(--muted); text-align: center; padding: 2rem 0; font-size: 0.9rem; }
+
+  #apikey-bar {
+    background: #fbf3e7;
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    font-size: 0.82rem;
+  }
+  #apikey-bar label { color: var(--muted); }
+  #apikey-bar input {
+    font: inherit;
+    font-size: 0.82rem;
+    padding: 0.3rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    min-width: 260px;
+    flex: 1 1 260px;
+  }
+  #apikey-msg { font-size: 0.78rem; color: var(--ok); }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Clasificador de imagenes coloniales - Proyecto ARCA</h1>
+    <div class="sub">Sugerencias de clasificacion con Claude (vision) - revisa y edita antes de guardar</div>
+  </div>
+  <div id="status-bar">
+    <span class="dot" id="status-dot"></span>
+    <span id="status-text">Verificando...</span>
+  </div>
+</header>
+
+<div id="apikey-bar">
+  <label for="apikey-input">API key de Anthropic:</label>
+  <input type="password" id="apikey-input" placeholder="sk-ant-..." autocomplete="off" />
+  <button class="small" id="btn-apikey-guardar">Guardar key</button>
+  <button class="small secondary" id="btn-apikey-mostrar" type="button">Mostrar</button>
+  <button class="small secondary" id="btn-apikey-borrar" type="button">Borrar</button>
+  <span id="apikey-msg"></span>
+</div>
+
+<main>
+  <div id="dropzone">
+    <p><strong>Arrastra imagenes aqui</strong> o hace click para elegir archivos</p>
+    <p style="font-size:0.78rem">jpg, jpeg, png, webp, gif</p>
+    <input type="file" id="file-input" multiple accept=".jpg,.jpeg,.png,.webp,.gif" />
+  </div>
+
+  <div id="toolbar">
+    <div class="info" id="toolbar-info">0 imagenes cargadas</div>
+    <div style="display:flex; gap:0.5rem;">
+      <button class="secondary" id="btn-clasificar-todas">Clasificar pendientes</button>
+      <button id="btn-guardar-todas">Guardar listas</button>
+    </div>
+  </div>
+
+  <div id="grid"></div>
+  <div id="empty-hint">Todavia no cargaste imagenes.</div>
+</main>
+
+<script>
+const ADMIN_FIELDS = [
+  ["registro", "Registro"], ["titulo", "Titulo"], ["Fecha", "Fecha"], ["Autores", "Autores"],
+  ["Técnicas", "Tecnica"], ["Ciudad_origen", "Ciudad origen"], ["Pais_origen", "Pais origen"],
+  ["Ciudad_actual", "Ciudad actual"], ["Pais_actual", "Pais actual"], ["Lugar ubicacion", "Lugar/ubicacion"],
+];
+
+// key, label, type ('text'|'select'|'checkbox'), vocabKey (para <select> o <datalist>), list (id de datalist)
+const CLASS_FIELDS = [
+  { key: "Categoria1", label: "Categoria 1", type: "text", listId: "dl-categoria1" },
+  { key: "Categoria2", label: "Categoria 2", type: "text" },
+  { key: "Categoria3", label: "Categoria 3", type: "text" },
+  { key: "Categoria4", label: "Categoria 4", type: "text" },
+  { key: "Categoria5", label: "Categoria 5", type: "text" },
+  { key: "Categoria6", label: "Categoria 6", type: "text" },
+  { key: "Simbolos", label: "Simbolos (separados por coma)", type: "text", listId: "dl-simbolos" },
+  { key: "Descriptores", label: "Descriptores (coma)", type: "text", listId: "dl-descriptores" },
+  { key: "Donante", label: "Donante", type: "select", vocabKey: "donante" },
+  { key: "Escenarios", label: "Escenarios", type: "text", listId: "dl-escenarios" },
+  { key: "Personajes centrales", label: "Personajes centrales (coma)", type: "text", listId: "dl-personajes" },
+  { key: "Cartela_filacteria", label: "Cartela / filacteria", type: "select", vocabKey: "cartela_filacteria" },
+  { key: "Tipo relato_visual", label: "Tipo de relato visual", type: "select", vocabKey: "tipo_relato_visual" },
+  { key: "Tipo_gestual", label: "Tipo gestual", type: "select", vocabKey: "tipo_gestual" },
+  { key: "Objetos personaje central", label: "Objetos de personaje central (coma)", type: "text", listId: "dl-objetos" },
+  { key: "Complejo_gestual", label: "Complejo gestual", type: "select", vocabKey: "complejo_gestual" },
+  { key: "Fisiognomica", label: "Postura corporal", type: "select", vocabKey: "postura_cuerpo" },
+  { key: "Fisiognomica_imagen", label: "Encuadre de la imagen", type: "select", vocabKey: "encuadre_imagen" },
+  { key: "Rostro posición", label: "Posicion del rostro", type: "select", vocabKey: "rostro_posicion" },
+  { key: "Gesto1", label: "Gesto 1", type: "text", listId: "dl-gestos" },
+  { key: "Gesto2", label: "Gesto 2", type: "text", listId: "dl-gestos" },
+  { key: "Gesto3", label: "Gesto 3", type: "text", listId: "dl-gestos" },
+  { key: "colectivo", label: "Colectivo / individual", type: "select", options: ["Personaje colectivo", "Personaje individual", "No aplica"] },
+  { key: "Género", label: "Genero", type: "select", options: ["Género masculino", "Género femenino", "Género masculino/femenino", "No aplica"] },
+];
+
+const BOOL_FIELDS = [
+  ["Edad: niñez", "Edad: niñez"],
+  ["Presencia: niños", "Presencia de niños"],
+  ["Edad: adolescencia-juventud", "Edad: adolescencia/juventud"],
+  ["Edad: adulto", "Edad: adulto"],
+  ["Edad: anciano", "Edad: anciano"],
+  ["Personaje: desnudo parcial / total", "Desnudo parcial/total"],
+  ["Personaje: contacto corporal", "Contacto corporal"],
+  ["Presencia: animales", "Presencia de animales"],
+  ["Imagen dentro de la imagen", "Imagen dentro de la imagen"],
+];
+
+const FINAL_FIELDS = [
+  { key: "Escena: simple/compuesta", label: "Escena", type: "select", options: ["Escena: simple", "Escena: compuesta"] },
+  { key: "Personajes: sagrados/profanos", label: "Personajes sagrados/profanos", type: "select",
+    options: ["Personajes: sagrados", "Personajes: profanos", "Personajes: sagrados y profanos"] },
+];
+
+let VOCAB = null;
+let cards = {}; // id -> {file, row, status, errorMsg}
+let cardCounter = 0;
+let yaClasificadas = new Set();
+
+async function cargarEstado() {
+  const dot = document.getElementById("status-dot");
+  const text = document.getElementById("status-text");
+  try {
+    const res = await fetch("/api/status");
+    const data = await res.json();
+    yaClasificadas = new Set(data.ya_clasificadas || []);
+    if (data.api_key_configurada) {
+      dot.className = "dot ok";
+      text.textContent = "API key configurada - salida: " + data.output_csv;
+    } else {
+      dot.className = "dot err";
+      text.textContent = "Falta pegar tu API key de Anthropic (abajo)";
+    }
+  } catch (e) {
+    dot.className = "dot err";
+    text.textContent = "No se pudo conectar con el servidor local (" + e.message + ")";
+  }
+}
+
+const LS_KEY = "arca_anthropic_api_key";
+
+async function enviarApiKey(key, { silencioso } = {}) {
+  const res = await fetch("/api/config", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ api_key: key }),
+  });
+  const data = await res.json();
+  await cargarEstado();
+  if (!silencioso) {
+    const msg = document.getElementById("apikey-msg");
+    msg.textContent = key ? "Key guardada para esta sesion." : "Key borrada.";
+    setTimeout(() => { msg.textContent = ""; }, 3000);
+  }
+  return data;
+}
+
+function initApiKeyBar() {
+  const input = document.getElementById("apikey-input");
+  const guardada = localStorage.getItem(LS_KEY);
+  if (guardada) {
+    input.value = guardada;
+    enviarApiKey(guardada, { silencioso: true });
+  }
+
+  document.getElementById("btn-apikey-guardar").addEventListener("click", () => {
+    const key = input.value.trim();
+    if (!key) { alert("Pega tu API key primero."); return; }
+    localStorage.setItem(LS_KEY, key);
+    enviarApiKey(key);
+  });
+
+  document.getElementById("btn-apikey-mostrar").addEventListener("click", (e) => {
+    const showing = input.type === "text";
+    input.type = showing ? "password" : "text";
+    e.target.textContent = showing ? "Mostrar" : "Ocultar";
+  });
+
+  document.getElementById("btn-apikey-borrar").addEventListener("click", () => {
+    input.value = "";
+    localStorage.removeItem(LS_KEY);
+    enviarApiKey("");
+  });
+}
+
+function buildDatalist(id, values) {
+  const dl = document.createElement("datalist");
+  dl.id = id;
+  (values || []).forEach(v => {
+    const opt = document.createElement("option");
+    opt.value = v;
+    dl.appendChild(opt);
+  });
+  document.body.appendChild(dl);
+}
+
+async function cargarVocab() {
+  const res = await fetch("/api/vocab");
+  VOCAB = await res.json();
+  buildDatalist("dl-categoria1", VOCAB.categoria1);
+  buildDatalist("dl-simbolos", VOCAB.simbolos);
+  buildDatalist("dl-descriptores", VOCAB.descriptores);
+  buildDatalist("dl-personajes", VOCAB.personajes);
+  buildDatalist("dl-objetos", VOCAB.objetos);
+  buildDatalist("dl-gestos", VOCAB.gestos);
+  buildDatalist("dl-escenarios", VOCAB.vocab.escenarios);
+}
+
+function selectOptions(values, current) {
+  return ["", ...values].map(v =>
+    `<option value="${escapeHtml(v)}" ${v === current ? "selected" : ""}>${v === "" ? "-" : escapeHtml(v)}</option>`
+  ).join("");
+}
+
+function escapeHtml(s) {
+  return (s ?? "").toString().replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function renderFieldGroup(fields, row, cardId) {
+  return fields.map(f => {
+    const val = row[f.key] ?? "";
+    const inputId = `f-${cardId}-${f.key}`;
+    if (f.type === "select") {
+      const opts = f.vocabKey ? VOCAB.vocab[f.vocabKey] : f.options;
+      return `<div class="field"><label for="${inputId}">${f.label}</label>
+        <select id="${inputId}" data-key="${f.key}">${selectOptions(opts, val)}</select></div>`;
+    }
+    const list = f.listId ? ` list="${f.listId}"` : "";
+    return `<div class="field"><label for="${inputId}">${f.label}</label>
+      <input type="text" id="${inputId}" data-key="${f.key}" value="${escapeHtml(val)}"${list} /></div>`;
+  }).join("");
+}
+
+function renderBooleanGrid(row, cardId) {
+  return `<div class="checkbox-grid">` + BOOL_FIELDS.map(([key, label]) => {
+    const checked = row[key] ? "checked" : "";
+    const inputId = `f-${cardId}-bool-${key}`;
+    return `<div class="field checkbox">
+      <input type="checkbox" id="${inputId}" data-boolkey="${key}" ${checked} />
+      <label for="${inputId}">${label}</label>
+    </div>`;
+  }).join("") + `</div>`;
+}
+
+function cardHtml(c) {
+  const row = c.row || {};
+  const dupBadge = yaClasificadas.has(c.file.name) ? `<span class="badge duplicado">ya en el CSV</span>` : "";
+  let body = "";
+  if (c.status === "listo" || c.status === "guardado") {
+    body = `
+      <fieldset><legend>Metadatos (opcionales, no los genera la IA)</legend>
+        ${renderFieldGroup(ADMIN_FIELDS.map(([k, l]) => ({ key: k, label: l, type: "text" })), row, c.id)}
+      </fieldset>
+      <fieldset><legend>Clasificacion sugerida (revisa y edita)</legend>
+        ${renderFieldGroup(CLASS_FIELDS, row, c.id)}
+      </fieldset>
+      <fieldset><legend>Edad / presencia / caracteristicas</legend>
+        ${renderBooleanGrid(row, c.id)}
+      </fieldset>
+      <fieldset><legend>Escena y personajes</legend>
+        ${renderFieldGroup(FINAL_FIELDS, row, c.id)}
+      </fieldset>
+      <div class="field">
+        <label>Notas para revision humana</label>
+        <textarea rows="2" data-key="notas_para_revision_humana">${escapeHtml(row["notas_para_revision_humana"])}</textarea>
+      </div>
+    `;
+  } else if (c.status === "error") {
+    body = `<div class="error-msg">${escapeHtml(c.errorMsg || "Error desconocido")}</div>`;
+  }
+
+  return `
+    <div class="thumb-row">
+      <img class="thumb" src="${c.objectUrl}" />
+      <div class="meta">
+        <div class="filename">${escapeHtml(c.file.name)}</div>
+        <span class="badge ${c.status}">${badgeLabel(c.status)}</span>
+        ${dupBadge}
+        <div><span class="toggle-link" data-action="toggle">${c.expanded ? "ocultar" : "ver/editar campos"}</span></div>
+      </div>
+    </div>
+    <div class="body">${body}</div>
+    <div class="actions">
+      <button class="secondary small" data-action="reclasificar" ${c.status === "clasificando" ? "disabled" : ""}>
+        ${botonClasificarLabel(c.status)}
+      </button>
+      <button class="small" data-action="guardar" ${c.status !== "listo" ? "disabled" : ""}>Guardar</button>
+    </div>
+  `;
+}
+
+function badgeLabel(status) {
+  return {
+    pendiente: "Pendiente",
+    clasificando: "Clasificando...",
+    listo: "Listo para revisar",
+    guardado: "Guardado",
+    error: "Error",
+  }[status] || status;
+}
+
+function botonClasificarLabel(status) {
+  return {
+    pendiente: "Clasificar",
+    clasificando: "Clasificando...",
+    error: "Reintentar",
+    listo: "Reclasificar",
+    guardado: "Reclasificar",
+  }[status] || "Clasificar";
+}
+
+function renderCard(c) {
+  let el = document.getElementById(c.id);
+  if (!el) {
+    el = document.createElement("div");
+    el.className = "card";
+    el.id = c.id;
+    document.getElementById("grid").appendChild(el);
+  }
+  el.classList.toggle("expanded", !!c.expanded);
+  el.innerHTML = cardHtml(c);
+
+  el.querySelector('[data-action="toggle"]').addEventListener("click", () => {
+    c.expanded = !c.expanded;
+    renderCard(c);
+  });
+  el.querySelector('[data-action="reclasificar"]').addEventListener("click", () => clasificarCard(c));
+  el.querySelector('[data-action="guardar"]').addEventListener("click", () => guardarCard(c));
+
+  el.querySelectorAll("[data-key]").forEach(input => {
+    input.addEventListener("input", () => { c.row[input.dataset.key] = input.value; });
+    input.addEventListener("change", () => { c.row[input.dataset.key] = input.value; });
+  });
+  el.querySelectorAll("[data-boolkey]").forEach(input => {
+    input.addEventListener("change", () => { c.row[input.dataset.boolkey] = input.checked ? input.dataset.boolkey : ""; });
+  });
+
+  updateToolbarInfo();
+}
+
+function updateToolbarInfo() {
+  const all = Object.values(cards);
+  const listas = all.filter(c => c.status === "listo").length;
+  const guardadas = all.filter(c => c.status === "guardado").length;
+  document.getElementById("toolbar-info").textContent =
+    `${all.length} imagenes cargadas - ${listas} listas para guardar - ${guardadas} guardadas`;
+}
+
+function agregarArchivos(fileList) {
+  document.getElementById("empty-hint").style.display = "none";
+  Array.from(fileList).forEach(file => {
+    const id = "card-" + (++cardCounter);
+    const c = {
+      id, file, status: "pendiente", expanded: false,
+      objectUrl: URL.createObjectURL(file),
+      row: { archivo_imagen: file.name },
+    };
+    cards[id] = c;
+    renderCard(c);
+    clasificarCard(c);
+  });
+}
+
+async function clasificarCard(c) {
+  c.status = "clasificando";
+  renderCard(c);
+  const fd = new FormData();
+  fd.append("imagen", c.file, c.file.name);
+  try {
+    const res = await fetch("/api/clasificar", { method: "POST", body: fd });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "error desconocido");
+    c.row = data.row;
+    c.status = "listo";
+    c.expanded = true;
+  } catch (e) {
+    c.status = "error";
+    c.errorMsg = e.message;
+    c.expanded = true;
+  }
+  renderCard(c);
+}
+
+async function guardarCard(c) {
+  const res = await fetch("/api/guardar", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ rows: [c.row] }),
+  });
+  const data = await res.json();
+  if (res.ok) {
+    c.status = "guardado";
+    yaClasificadas.add(c.file.name);
+    renderCard(c);
+  } else {
+    alert("Error al guardar: " + (data.error || "desconocido"));
+  }
+}
+
+document.getElementById("btn-clasificar-todas").addEventListener("click", () => {
+  Object.values(cards).filter(c => c.status === "pendiente" || c.status === "error").forEach(clasificarCard);
+});
+
+document.getElementById("btn-guardar-todas").addEventListener("click", async () => {
+  const listas = Object.values(cards).filter(c => c.status === "listo");
+  if (listas.length === 0) { alert("No hay imagenes listas para guardar."); return; }
+  const res = await fetch("/api/guardar", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ rows: listas.map(c => c.row) }),
+  });
+  const data = await res.json();
+  if (res.ok) {
+    listas.forEach(c => { c.status = "guardado"; yaClasificadas.add(c.file.name); renderCard(c); });
+  } else {
+    alert("Error al guardar: " + (data.error || "desconocido"));
+  }
+});
+
+const dropzone = document.getElementById("dropzone");
+const fileInput = document.getElementById("file-input");
+dropzone.addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", e => agregarArchivos(e.target.files));
+["dragenter", "dragover"].forEach(evt =>
+  dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.add("drag"); })
+);
+["dragleave", "drop"].forEach(evt =>
+  dropzone.addEventListener(evt, e => { e.preventDefault(); dropzone.classList.remove("drag"); })
+);
+dropzone.addEventListener("drop", e => agregarArchivos(e.dataTransfer.files));
+
+cargarEstado();
+cargarVocab();
+initApiKeyBar();
+</script>
+</body>
+</html>
