@@ -419,7 +419,7 @@ function cardHtml(c) {
   let body = "";
   if (c.status === "listo" || c.status === "guardado") {
     body = `
-      <fieldset><legend>Metadatos (opcionales, no los genera la IA)</legend>
+      <fieldset><legend>Opcionales</legend>
         ${renderFieldGroup(ADMIN_FIELDS.map(([k, l]) => ({ key: k, label: l, type: "text" })), row, c.id)}
       </fieldset>
       <fieldset><legend>Clasificacion sugerida (revisa y edita)</legend>
